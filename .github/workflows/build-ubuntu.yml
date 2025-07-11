@@ -1,4 +1,4 @@
-name: build-all
+name: build-ubuntu
 on: workflow_dispatch
 #workflow_dispatch
 #[push]
@@ -31,7 +31,7 @@ jobs:
           cd arm64
           #git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
           #git clone --depth 1 https://github.com/torvalds/linux.git
-          git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b linux-6.15.y
+          git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b lv6.15.4
           #now=`cat linux-next/localversion-next|sed 's/-next-//'`
           #rm      linux-next/localversion-next
           now=`date +"%Y%m%d"`
@@ -40,11 +40,7 @@ jobs:
           #head -5 linux-next/Makefile | sed 's# ##g' > ./tmp_var.txt
           head -5 linux/Makefile | sed 's# ##g' > ./tmp_var.txt
           . ./tmp_var.txt
-          if [ ${#EXTRAVERSION} -eq 0 ]; then
-              EXTRAVERSION=".${now}"
-          else
-              EXTRAVERSION="${EXTRAVERSION}.$now"
-          fi
+          EXTRAVERSION="${EXTRAVERSION}.-now"
           export PACKAGE_RELEASE="$VERSION.$PATCHLEVEL.${SUBLEVEL}$EXTRAVERSION-rockchip"
           export DEBIAN_PACKAGE="kernel-$PACKAGE_RELEASE"
           export MAKE="make KERNELVERSION=$PACKAGE_RELEASE LOCALVERSION= localver-extra= PYTHON=python3"
@@ -184,7 +180,7 @@ jobs:
         uses: actions/upload-artifact@v4.5.0
         with:
         # A file, directory or wildcard pattern that describes what to upload
-          name: disk-image
+          name: ubuntu-disk-image
           path: ubuntu-mainline*.xz
           compression-level: 0
           # The desired behavior if no files are found using the provided path.
