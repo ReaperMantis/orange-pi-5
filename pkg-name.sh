@@ -12,7 +12,8 @@
 	# echo -n 'apt-get -y install ' >> aa
 	echo 'linux-firmware cloud-initramfs-growroot ' >> aa
 	echo 'oem-config-gtk yaru-theme-unity yaru-theme-icon yaru-theme-gtk aptdaemon ' >> aa
-	echo 'grub-efi-arm64 initramfs-tools' >> aa
+	echo 'grub-efi-arm64 initramfs-tools ' >> aa
+ 	echo 'sddm' >> aa
 	cd /
 	/bin/bash /aaa/DEBIAN/aa
  
