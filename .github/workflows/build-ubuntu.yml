@@ -26,7 +26,7 @@ jobs:
             python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
             python3-distutils-extra python3-pkg-resources swig libfdt-dev libpython3-dev bison
 
-      # 3) Clone + build kernel + package (kernel, linux-libc-dev, linux-headers) — all here
+      # 3) Clone + build kernel + package (kernel, linux-libc-dev, linux-headers)
       - name: Clone
         run: |
           set -e
@@ -190,7 +190,7 @@ jobs:
       - name: disk kernel
         run: sudo umount arm64
 
-      # 5) Build U-Boot (kept intact)
+      # 5) Build U-Boot
       - name: u-boot
         run: |
           set -e
@@ -233,7 +233,7 @@ jobs:
       - name: disk u-boot
         run: sudo umount arm64
 
-      # 6) Rootfs & disk image (kept intact)
+      # 6) Rootfs & disk image
       - name: rootfs
         run: |
           set -e
