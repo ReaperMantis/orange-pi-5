@@ -108,6 +108,44 @@ jobs:
           cp *.deb ..
           cd ..
 
+      - name: Build headers package
+        run: |
+          cd linux
+          export PACKAGE_RELEASE=$(make kernelrelease)
+          export HEADER_PATH="../linux-headers-${PACKAGE_RELEASE}_arm64"
+          rm -rf $HEADER_PATH && mkdir -p $HEADER_PATH/usr/src/linux-headers-${PACKAGE_RELEASE}
+
+          # Install kernel headers for modules
+          make headers_install \
+              INSTALL_HDR_PATH=$HEADER_PATH/usr/src/linux-headers-${PACKAGE_RELEASE}
+
+          # Copy required build files
+          cp -a Makefile Module.symvers System.map .config \
+                $HEADER_PATH/usr/src/linux-headers-${PACKAGE_RELEASE}/
+          cp -a include arch scripts \
+                $HEADER_PATH/usr/src/linux-headers-${PACKAGE_RELEASE}/
+
+          # Symlink /lib/modules/<version>/build
+          mkdir -p $HEADER_PATH/lib/modules/${PACKAGE_RELEASE}
+          ln -s /usr/src/linux-headers-${PACKAGE_RELEASE} \
+                $HEADER_PATH/lib/modules/${PACKAGE_RELEASE}/build
+
+          # Debian control metadata
+          mkdir -p $HEADER_PATH/DEBIAN
+          cat > $HEADER_PATH/DEBIAN/control <<EOF
+          Package: linux-headers-${PACKAGE_RELEASE}
+          Version: ${PACKAGE_RELEASE}
+          Section: devel
+          Priority: optional
+          Architecture: arm64
+          Depends: kmod, linux-base (>= 4.5ubuntu1~16.04.1)
+          Maintainer: none
+          Description: Linux kernel headers for building external modules.
+          EOF
+
+          fakeroot dpkg-deb -z4 -Zxz -b $HEADER_PATH
+          cp $HEADER_PATH.deb ..
+
       - name: Upload a kernel
         uses: actions/upload-artifact@v4.5.0
         with:
